@@ -1,0 +1,33 @@
+version: "3.8"
+x-logging: &logging
+  logging:
+    driver: loki
+    options:
+      loki-url: "https://${LOKI_USER}:${LOKI_PASSWORD}@${LOKI_URL}/loki/api/v1/push"
+      loki-external-labels: "type=${APP_ENV},repo=millionpieces-backend,job=docker,container_name={{.Name}}"
+
+services:
+  backend:
+    <<: *logging
+    build:
+      context: .
+      args:
+        - DOCKER_ENV=${APP_ENV}
+    ports:
+      - ${DOCKER_APP_PORT}:3000
+    volumes:
+      - /million-public-${APP_ENV}:/app/public
+    depends_on:
+      - postgres
+
+  postgres:
+    <<: *logging
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  dbdata:

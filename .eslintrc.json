@@ -1,0 +1,30 @@
+{
+  "env": {
+      "es2021": true,
+      "node": true
+  },
+  "extends": [
+      "airbnb-base",
+      "airbnb-typescript/base"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+      "project": "./tsconfig.json",
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+  },
+  "plugins": [
+      "@typescript-eslint"
+  ],
+  "rules": {
+      "import/prefer-default-export": "off",
+      "no-console": "warn",
+      "max-len": ["error", { "code": 140 }],
+      "object-curly-newline": ["error", { "consistent": true }],
+      "class-methods-use-this": ["off", { "exceptMethods": [] }],
+      "no-param-reassign": "off",
+      "import/no-cycle": "off",
+      "no-await-in-loop": "off",
+      "no-restricted-syntax": ["warn", "BinaryExpression[operator='of']"]
+  }
+}
