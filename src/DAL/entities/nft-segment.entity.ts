@@ -6,6 +6,8 @@ import { AutoMap } from '@automapper/classes';
 
 import { MergedSegment } from './merged-segment.entity';
 import { NftSegmentMeta } from './nft-segment-meta.entity';
+import { CivilizationSegment } from './civilization-game/civilization-segments.entity';
+import { User } from './user.entity';
 
 /**
  * Entity which represent real NFTs from ETH blockchain on the server.
@@ -42,7 +44,13 @@ export class NftSegment extends BaseEntity {
   @OneToOne(() => NftSegmentMeta, (meta) => meta.segment)
     meta: NftSegmentMeta;
 
+  @ManyToOne(() => User, (user) => user.segments)
+    owner: User;
+
   @ManyToOne(() => MergedSegment, (mergedSegment) => mergedSegment.segments, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'merged_segment_id' })
     mergedSegment: MergedSegment;
+
+  @OneToOne(() => CivilizationSegment, (civSegment) => civSegment.segment)
+    civilizationSegment: CivilizationSegment;
 }

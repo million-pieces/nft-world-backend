@@ -4,6 +4,7 @@ import { ErrorMessages } from '../infrastructure/config/constants/error-messages
 
 import { OpenSeaService } from './opensea.service';
 import { StatsService } from './stats.service';
+import { CivilizationMapService } from './civilization-game/civilization-map.service';
 
 /**
  * Cron service
@@ -16,6 +17,8 @@ export class CronService {
 
   constructor(
     private readonly statsService: StatsService,
+
+    private readonly civilizationMapService: CivilizationMapService,
 
     private readonly openseaService: OpenSeaService,
   ) {}
@@ -63,6 +66,15 @@ export class CronService {
       await this.openseaService.updateLandsForSale();
     } catch (e) {
       this.logger.warn(ErrorMessages.BAD_LANDS_FOR_SALE_UPDATE);
+    }
+  }
+
+  @Cron('0 * * * *')
+  async updateSegmentsOwners() {
+    try {
+      await this.civilizationMapService.updateGlobalMapState();
+    } catch (e) {
+      this.logger.warn(ErrorMessages.BAD_SEGMENTS_OWNERS_UPDATE);
     }
   }
 }

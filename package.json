@@ -14,16 +14,28 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=development node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-
+    "migration:up": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:run -f ./src/DAL/ormconfig.ts",
+    "migration:mongodb:up": "cross-env NODE_ENV=development nestjs-command migration:up:mongodb",
     "migration:create:development": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:create -f ./src/DAL/ormconfig.ts -n",
     "migration:generate:development": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:generate -f ./src/DAL/ormconfig.ts -n",
     "migration:up:development": "cross-env NODE_ENV=development ts-node ./node_modules/.bin/typeorm migration:run -f ./src/DAL/ormconfig.ts",
     "migration:down:development": "cross-env NODE_ENV=development ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/DAL/ormconfig.ts",
-  
     "migration:create:production": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:create -f ./src/DAL/ormconfig.ts -n",
     "migration:generate:production": "cross-env NODE_ENV=production ts-node ./node_modules/typeorm/cli.js migration:generate -f ./src/DAL/ormconfig.ts -n",
     "migration:up:production": "cross-env NODE_ENV=production ts-node ./node_modules/.bin/typeorm migration:run -f ./src/DAL/ormconfig.ts",
-    "migration:down:production": "cross-env NODE_ENV=production ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/DAL/ormconfig.ts"
+    "migration:down:production": "cross-env NODE_ENV=production ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/DAL/ormconfig.ts",
+    "migration:mongodb:up:development": "cross-env NODE_ENV=development nestjs-command migration:up:mongodb",
+    "migration:mongodb:up:production": "cross-env NODE_ENV=production nestjs-command migration:up:mongodb",
+    "migration:mongodb:down:development": "cross-env NODE_ENV=development nestjs-command migration:down:mongodb",
+    "migration:mongodb:down:production": "cross-env NODE_ENV=production nestjs-command migration:down:mongodb",
+    "base64toFile:dev": "cross-env NODE_ENV=development nestjs-command base64ToFile",
+    "base64toFile:prod": "cross-env NODE_ENV=production nestjs-command base64ToFile",
+    "logImagesExtName:dev": "cross-env NODE_ENV=development nestjs-command logImagesExtname",
+    "logImagesExtName:prod": "cross-env NODE_ENV=production nestjs-command logImagesExtname",
+    "removeNonExistingFiles:dev": "cross-env NODE_ENV=development nestjs-command removeNonExistingFiles",
+    "removeNonExistingFiles:prod": "cross-env NODE_ENV=production nestjs-command removeNonExistingFiles",
+    "pullNftOwners:dev": "cross-env NODE_ENV=development nestjs-command pullNftOwners",
+    "pullNftOwners:prod": "cross-env NODE_ENV=production nestjs-command pullNftOwners"
   },
   "dependencies": {
     "@automapper/classes": "^7.3.14",
@@ -38,7 +50,7 @@
     "@nestjs/schedule": "^2.0.1",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/serve-static": "^2.2.2",
-    "@nestjs/typeorm": "^8.0.3",
+    "@nestjs/typeorm": "8.0.3",
     "@types/multer": "^1.4.7",
     "axios": "^0.27.2",
     "class-transformer": "^0.5.1",
@@ -49,11 +61,12 @@
     "express": "^4.18.0",
     "express-http-context": "^1.2.4",
     "graphql-request": "^4.2.0",
-    "jimp": "^0.16.1",
+    "http2-wrapper": "^2.1.11",
+    "jimp": "^0.15.0",
     "moment": "^2.29.3",
     "mongodb": "^3.7.3",
     "mongoose": "^6.3.1",
-    "multer": "^1.4.4",
+    "multer": "1.4.5-lts.1",
     "nestjs-command": "^3.1.1",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
@@ -63,7 +76,8 @@
     "ts-node": "^10.0.0",
     "typeorm": "^0.2.41",
     "uuid": "^8.3.2",
-    "web3": "^1.7.3",
+    "web3": "^1.7.4",
+    "web3-utils": "^1.7.3",
     "yargs": "^17.4.1"
   },
   "devDependencies": {
@@ -83,6 +97,9 @@
     "ts-loader": "^9.2.3",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
+  },
+  "resolutions": {
+    "got": "11.8.5"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -41,7 +41,7 @@ You can see example [here](https://github.com/million-pieces/millionpieces-backe
 5. After that run database migrations:
 
 ```shell
-docker-compose exec backend npm run migration:up:APP_ENV
+docker-compose exec backend npm run migration:up
 ```
 
 ##### Docker logging
