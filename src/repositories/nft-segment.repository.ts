@@ -9,6 +9,10 @@ export class NftSegmentRepository extends Repository<NftSegment> {
     return this.find({ where: { imageMini: Not(IsNull()) }, relations: ['meta'] });
   }
 
+  async getOwnedSegments(): Promise<NftSegment[]> {
+    return this.find({ where: { owner: Not(IsNull()) }, relations: ['meta', 'owner', 'owner.civilizationUser'] });
+  }
+
   async getSegmentByCoordinate(coordinates: string): Promise<NftSegment> {
     return this.createQueryBuilder('nft_segment')
       .innerJoinAndMapOne(
@@ -17,7 +21,21 @@ export class NftSegmentRepository extends Repository<NftSegment> {
         'meta',
         'meta.segment_id = nft_segment.id',
       )
+      .leftJoinAndSelect('nft_segment.owner', 'owner')
       .where('nft_segment.coordinates = :coordinates', { coordinates })
+      .getOne();
+  }
+
+  async getSegmentById(id: number): Promise<NftSegment> {
+    return this.createQueryBuilder('nft_segment')
+      .innerJoinAndMapOne(
+        'nft_segment.meta',
+        NftSegmentMeta,
+        'meta',
+        'meta.segment_id = nft_segment.id',
+      )
+      .leftJoinAndSelect('nft_segment.owner', 'owner')
+      .where('nft_segment.id = :id', { id })
       .getOne();
   }
 }

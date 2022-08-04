@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { ApiConfigService } from './api-config.service';
+import { CivilizationConfigService } from './civilization-config.service';
 
 /**
  * Module with server configuration.
@@ -16,7 +17,7 @@ import { ApiConfigService } from './api-config.service';
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
   ],
-  providers: [ApiConfigService],
-  exports: [ApiConfigService],
+  providers: [ApiConfigService, CivilizationConfigService],
+  exports: [ApiConfigService, CivilizationConfigService],
 })
 export class ApiConfigModule {}

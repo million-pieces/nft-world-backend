@@ -13,10 +13,13 @@ import { MapProfile } from './infrastructure/mapper.profile';
 import { NftSegmentController } from './controllers/nft-segment.controller';
 import { NftSegmentRepository } from './repositories/nft-segment.repository';
 import { NftSegmentService } from './services/nft-segment.service';
+import { NftMetadataController } from './controllers/nft-metadata.controller';
 
 import { MergedSegmentRepository } from './repositories/merged-segment.repository';
 import { MergedSegmentService } from './services/merged-segment.service';
 import { MergedSegmentController } from './controllers/merged-segment.controller';
+
+import { MongoDBMigration } from './DAL/mongodb-migration/mongodb-migration.command';
 
 import { ApiConfigModule } from './infrastructure/config/api-config.module';
 import { ApiConfigService } from './infrastructure/config/api-config.service';
@@ -44,6 +47,30 @@ import { NftWorldRepository } from './repositories/nft-world.repository';
 import { OpenSeaService } from './services/opensea.service';
 import { CronService } from './services/cron.service';
 import { LandsForSaleRepository } from './repositories/lands-for-sale.repository';
+
+import { Base64ToFiles } from './infrastructure/utils/scripts/base64-to-file.command';
+import { LogImagesExtName } from './infrastructure/utils/scripts/log-images-extname.command';
+import { RemoveNonExistingFiles } from './infrastructure/utils/scripts/remove-non-existing-files.command';
+import { PullNftOwners } from './infrastructure/utils/scripts/pull-nft-owners.command';
+
+import { CivilizationSegmentRepository } from './repositories/civilization-game/civilization-segment-repository';
+import { CivilizationMapController } from './controllers/civilization-game/civilization-map.cotroller';
+import { CivilizationCavesService } from './services/civilization-game/civilization-caves.service';
+import { CivilizationMapService } from './services/civilization-game/civilization-map.service';
+import { CivilizationSegmentService } from './services/civilization-game/civilization-segment.service';
+import { CivilizationCaveCitizenRepository } from './repositories/civilization-game/civilization-cave-citizen.repository';
+import { CivilizationCaveRepository } from './repositories/civilization-game/civilization-cave.repository';
+import { CivilizationUserRepository } from './repositories/civilization-game/civilization-user-repository';
+import { CivilizationCavesController } from './controllers/civilization-game/civilization-caves.controller';
+import { CivilizationUserService } from './services/civilization-game/civilization-user.service';
+import { CivilizationSegmentController } from './controllers/civilization-game/civilization-segments.controller';
+import { CivilizationUserController } from './controllers/civilization-game/civilization-user.controller';
+import { CivilizationMetadataController } from './controllers/civilization-game/civilization-metadata.controller';
+import { CivilizationMetadataService } from './services/civilization-game/civilization-metadata.service';
+import { CivilizationClaimController } from './controllers/civilization-game/civilization-claim.controller';
+import { CivilizationClaimService } from './services/civilization-game/civilization-claim.service';
+import { CivilizationGraphService } from './services/civilization-game/civilization-graph.service';
+import { CivilizationCitizensService } from './services/civilization-game/civilization-citizens.service';
 
 /**
  * Root module
@@ -76,6 +103,10 @@ import { LandsForSaleRepository } from './repositories/lands-for-sale.repository
       PopulationRepository,
       NftWorldRepository,
       LandsForSaleRepository,
+      CivilizationSegmentRepository,
+      CivilizationCaveCitizenRepository,
+      CivilizationCaveRepository,
+      CivilizationUserRepository,
     ]),
   ],
   controllers: [
@@ -84,6 +115,13 @@ import { LandsForSaleRepository } from './repositories/lands-for-sale.repository
     SegmentLoggerController,
     UserController,
     StatsController,
+    NftMetadataController,
+    CivilizationMapController,
+    CivilizationCavesController,
+    CivilizationSegmentController,
+    CivilizationUserController,
+    CivilizationMetadataController,
+    CivilizationClaimController,
   ],
   providers: [
     {
@@ -110,8 +148,21 @@ import { LandsForSaleRepository } from './repositories/lands-for-sale.repository
     MergedSegmentService,
     SegmentLoggerService,
     MapProfile,
+    MongoDBMigration,
+    Base64ToFiles,
+    LogImagesExtName,
+    RemoveNonExistingFiles,
+    PullNftOwners,
     GraphQLService,
     Logger,
+    CivilizationCavesService,
+    CivilizationMapService,
+    CivilizationSegmentService,
+    CivilizationUserService,
+    CivilizationMetadataService,
+    CivilizationClaimService,
+    CivilizationGraphService,
+    CivilizationCitizensService,
   ],
 })
 export class AppModule {

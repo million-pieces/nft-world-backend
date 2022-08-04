@@ -112,11 +112,7 @@ export class GraphQLService {
       throw new NotFoundException(ErrorMessages.SEGMENT_NOT_FOUND);
     }
 
-    const ownerId = segments[0].owner.id;
-
-    if (!ownerId) {
-      throw new NotFoundException(ErrorMessages.USER_NOT_FOUND);
-    }
+    const ownerId = segments[0]?.owner?.id;
 
     return ownerId;
   }

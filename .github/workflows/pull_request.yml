@@ -1,0 +1,30 @@
+name: Check pull request
+
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  check_build:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check npm packages
+        run: npm audit --audit-level high
+
+      - name: Build the project
+        run: |
+          npm i --production=false
+          npm run build

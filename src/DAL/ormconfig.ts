@@ -9,6 +9,10 @@ import { Population } from './entities/population.entity';
 import { SegmentImageLog } from './entities/segment-image-log.entity';
 import { Socials } from './entities/socials.entity';
 import { User } from './entities/user.entity';
+import { CivilizationCave } from './entities/civilization-game/civilization-cave.entity';
+import { CivilizationCaveCitizens } from './entities/civilization-game/civilization-cave-citizens.entity';
+import { CivilizationUser } from './entities/civilization-game/civilization-user.entity';
+import { CivilizationSegment } from './entities/civilization-game/civilization-segments.entity';
 
 dotenv.config({ path: `.${process.env.NODE_ENV}.env` });
 
@@ -33,6 +37,10 @@ const ormconfig: ConnectionOptions = {
     SegmentImageLog,
     Socials,
     User,
+    CivilizationCave,
+    CivilizationCaveCitizens,
+    CivilizationUser,
+    CivilizationSegment,
   ],
   migrations: ['src/DAL/migrations/*.*'],
   cli: {

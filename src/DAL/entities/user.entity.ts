@@ -1,10 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn,
+  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 
 import { Population } from './population.entity';
 import { Socials } from './socials.entity';
+import { CivilizationUser } from './civilization-game/civilization-user.entity';
+import { NftSegment } from './nft-segment.entity';
 
 /**
  * Entity which stores user's info
@@ -39,9 +41,15 @@ export class User extends BaseEntity {
   @OneToOne(() => Socials, (socials) => socials.user, { cascade: true })
     socials: Socials;
 
+  @OneToMany(() => NftSegment, (segment) => segment.owner)
+    segments: NftSegment[];
+
   @ManyToOne(() => Population, (population) => population.id, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'population_id' })
     population: Population;
+
+  @OneToOne(() => CivilizationUser, (civUser) => civUser.user)
+    civilizationUser: CivilizationUser;
 
   @CreateDateColumn()
     createdAt: Date;

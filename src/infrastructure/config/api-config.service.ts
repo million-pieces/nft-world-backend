@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { CivilizationCaveCitizens } from '../../DAL/entities/civilization-game/civilization-cave-citizens.entity';
+import { CivilizationCave } from '../../DAL/entities/civilization-game/civilization-cave.entity';
+import { CivilizationSegment } from '../../DAL/entities/civilization-game/civilization-segments.entity';
+import { CivilizationUser } from '../../DAL/entities/civilization-game/civilization-user.entity';
 import { LandsForSale } from '../../DAL/entities/lands-for-sale.entity';
 import { MergedSegment } from '../../DAL/entities/merged-segment.entity';
 import { NftSegmentMeta } from '../../DAL/entities/nft-segment-meta.entity';
@@ -57,6 +61,10 @@ export class ApiConfigService {
         SegmentImageLog,
         Socials,
         User,
+        CivilizationCave,
+        CivilizationCaveCitizens,
+        CivilizationSegment,
+        CivilizationUser,
       ],
       keepConnectionAlive: true,
       synchronize: false,
@@ -69,6 +77,10 @@ export class ApiConfigService {
 
   get infuraURI(): string {
     return this.configService.get<string>('INFURA_URI');
+  }
+
+  get pieceContractAddress(): string {
+    return this.configService.get<string>('PIECE_CONTRACT_ADDRESS');
   }
 
   // // Recovery message uses in signature guard.

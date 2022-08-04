@@ -18,6 +18,7 @@ import { ErrorMessages } from '../infrastructure/config/constants/error-messages
 import { GetNftSegmentsWithCustomImageDto } from '../dto/nft-segments/get-nft-segments-with-custom-image.dto';
 import { GetNftSegmentWithMeta } from '../dto/nft-segments/get-nft-segment-with-meta.dto';
 import { UpdateSegmentDto } from '../dto/nft-segments/update-segment.dto';
+import { NftMetadataDto } from '../dto/nft-segments/nft-metadata.dto';
 
 import { GraphQLService } from './graphQL.service';
 import { SegmentLoggerService } from './segment-logger.service';
@@ -42,6 +43,33 @@ export class NftSegmentService {
     @InjectMapper()
     private readonly mapper: Mapper,
   ) {}
+
+  async getNftMetadata(segmentId: number): Promise<NftMetadataDto> {
+    const segment = await this.nftSegmentRepository.getSegmentById(segmentId);
+
+    if (segment == null) {
+      throw new NotFoundException(ErrorMessages.SEGMENT_NOT_FOUND);
+    }
+
+    return {
+      id: segment.id,
+      name: `${segment.meta.country.replace(/_/g, ' ')} ${segment.coordinates}`,
+      image: segment.meta.image,
+      attributes: [{
+        trait_type: 'Artwork',
+        value: segment.meta.artwork,
+      },
+      {
+        trait_type: 'Country',
+        value: segment.meta.country,
+      },
+      {
+        trait_type: 'Coordinates',
+        value: segment.coordinates,
+      },
+      ],
+    };
+  }
 
   /**
    * Get all NFT segments with custom image uploaded by user.

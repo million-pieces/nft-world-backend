@@ -1,0 +1,138 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+      - development
+  workflow_dispatch:
+
+# Ensures that only one deploy task per branch/environment will run at a time.
+concurrency:
+  group: environment-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  development:
+    name: Deploy to Development
+    runs-on: [ 'self-hosted', 'self-hosted-dev' ]
+    if: github.ref == 'refs/heads/development'
+    environment: Development
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare .env
+        run: |
+          cp .example.env .development.env
+
+          sed -i \
+            -e "s,^LOKI_URL=,LOKI_URL=${LOKI_URL}," \
+            -e "s:^LOKI_USER=:LOKI_USER=${LOKI_USER}:" \
+            -e "s:^LOKI_PASSWORD=:LOKI_PASSWORD=${LOKI_PASSWORD}:" \
+            -e "s:^RECOVERY_MESSAGE=:RECOVERY_MESSAGE=${RECOVERY_MESSAGE}:" \
+            -e "s,^OPENSEA_COLLECTION_LINK=,OPENSEA_COLLECTION_LINK=${OPENSEA_COLLECTION_LINK}," \
+            -e "s:^OPENSEA_API_KEY=:OPENSEA_API_KEY=${OPENSEA_API_KEY}:" \
+            -e "s:^OPENSEA_CONTRACT_ADDRESS=:OPENSEA_CONTRACT_ADDRESS=${OPENSEA_CONTRACT_ADDRESS}:"  \
+            -e "s:^OPENSEA_BASE_PRICE=:OPENSEA_BASE_PRICE=${OPENSEA_BASE_PRICE}:" \
+            -e "s:^DOCKER_APP_PORT=:DOCKER_APP_PORT=56251:" \
+            -e "s:^APP_ENV=:APP_ENV=development:" \
+            -e "s:^DB_USERNAME=:DB_USERNAME=${DB_USERNAME}:" \
+            -e "s:^DB_PASSWORD=:DB_PASSWORD=${DB_PASSWORD}:" \
+            -e "s:^DB_NAME=:DB_NAME=${DB_NAME}:" \
+            -e "s,^INFURA_URI=,INFURA_URI=${INFURA_URI}," \
+            -e "s,^GRAPH_URI=,GRAPH_URI=${GRAPH_URI}," \
+            .development.env
+
+        env:
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+          LOKI_USER: ${{ secrets.LOKI_USER }}
+          LOKI_PASSWORD: ${{ secrets.LOKI_PASSWORD }}
+          RECOVERY_MESSAGE: ${{ secrets.RECOVERY_MESSAGE }}
+          OPENSEA_COLLECTION_LINK: ${{ secrets.OPENSEA_COLLECTION_LINK }}
+          OPENSEA_API_KEY: ${{ secrets.OPENSEA_API_KEY }}
+          OPENSEA_CONTRACT_ADDRESS: ${{ secrets.OPENSEA_CONTRACT_ADDRESS }}
+          OPENSEA_BASE_PRICE: ${{ secrets.OPENSEA_BASE_PRICE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          INFURA_URI: ${{ secrets.INFURA_URI }}
+          GRAPH_URI: ${{ secrets.GRAPH_URI }}
+
+      - name: Set compose project name
+        run: "echo COMPOSE_PROJECT_NAME=millionpieces-backend >> .development.env"
+
+      - name: Start the app
+        run: docker-compose --env-file .development.env up -d --build
+
+      - name: Send Slack Notification
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON: 'https://github.com/fluidicon.png'
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: ${{ job.status == 'success' && 'Build is successful ✅' || (job.status == 'cancelled' && 'Build is cancelled ⏸' || 'Build is failing ❌') }}
+          SLACK_FOOTER: https://new.api.nftworld.com
+
+  production:
+    runs-on: [ 'self-hosted', 'self-hosted-prod' ]
+    if: github.ref == 'refs/heads/master'
+    environment: Production
+    name: Deploy to Production
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare .env
+        run: |
+          cp .example.env .production.env
+
+          sed -i \
+            -e "s,^LOKI_URL=,LOKI_URL=${LOKI_URL}," \
+            -e "s:^LOKI_USER=:LOKI_USER=${LOKI_USER}:" \
+            -e "s:^LOKI_PASSWORD=:LOKI_PASSWORD=${LOKI_PASSWORD}:" \
+            -e "s:^RECOVERY_MESSAGE=:RECOVERY_MESSAGE=${RECOVERY_MESSAGE}:" \
+            -e "s,^OPENSEA_COLLECTION_LINK=,OPENSEA_COLLECTION_LINK=${OPENSEA_COLLECTION_LINK}," \
+            -e "s:^OPENSEA_API_KEY=:OPENSEA_API_KEY=${OPENSEA_API_KEY}:" \
+            -e "s:^OPENSEA_CONTRACT_ADDRESS=:OPENSEA_CONTRACT_ADDRESS=${OPENSEA_CONTRACT_ADDRESS}:"  \
+            -e "s:^OPENSEA_BASE_PRICE=:OPENSEA_BASE_PRICE=${OPENSEA_BASE_PRICE}:" \
+            -e "s:^DOCKER_APP_PORT=:DOCKER_APP_PORT=56252:" \
+            -e "s:^APP_ENV=:APP_ENV=production:" \
+            -e "s:^DB_USERNAME=:DB_USERNAME=${DB_USERNAME}:" \
+            -e "s:^DB_PASSWORD=:DB_PASSWORD=${DB_PASSWORD}:" \
+            -e "s:^DB_NAME=:DB_NAME=${DB_NAME}:" \
+            -e "s,^INFURA_URI=,INFURA_URI=${INFURA_URI}," \
+            -e "s,^GRAPH_URI=,GRAPH_URI=${GRAPH_URI}," \
+            .production.env
+        env:
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+          LOKI_USER: ${{ secrets.LOKI_USER }}
+          LOKI_PASSWORD: ${{ secrets.LOKI_PASSWORD }}
+          RECOVERY_MESSAGE: ${{ secrets.RECOVERY_MESSAGE }}
+          OPENSEA_COLLECTION_LINK: ${{ secrets.OPENSEA_COLLECTION_LINK }}
+          OPENSEA_API_KEY: ${{ secrets.OPENSEA_API_KEY }}
+          OPENSEA_CONTRACT_ADDRESS: ${{ secrets.OPENSEA_CONTRACT_ADDRESS }}
+          OPENSEA_BASE_PRICE: ${{ secrets.OPENSEA_BASE_PRICE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          INFURA_URI: ${{ secrets.INFURA_URI }}
+          GRAPH_URI: ${{ secrets.GRAPH_URI }}
+
+      - name: Set compose project name
+        run: "echo COMPOSE_PROJECT_NAME=millionpieces-backend-prod >> .production.env"
+
+      - name: Start the app
+        run: docker-compose --env-file .production.env up -d --build
+
+      - name: Send Slack Notification
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON: 'https://github.com/fluidicon.png'
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: ${{ job.status == 'success' && 'Build is successful ✅' || (job.status == 'cancelled' && 'Build is cancelled ⏸' || 'Build is failing ❌') }}
+          SLACK_FOOTER: https://new.api.nftworld.com
+
